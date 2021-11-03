@@ -50,13 +50,13 @@ h = h0-h0(1); %reference to initial position (y=0)
 
 
 %Method to calculate slope error using brightness centroiding
-for i = 1:size(flatim,3)
-    weightedBrightnessX(:,:,i) = flatim_rot_shift(:,:,i)*xpos(i);
-    weightedBrightnessY(:,:,i) = flatim_rot_shift(:,:,i)*h(i);
-
-end
-XSlopeError = sum(weightedBrightnessX,3)./(2*distanceToMirror*1000*sum(flatim_rot_shift,3));
-YSlopeError = sum(weightedBrightnessY,3)./(2*distanceToMirror*1000*sum(flatim_rot_shift,3));
+% for i = 1:size(flatim,3)
+%     weightedBrightnessX(:,:,i) = flatim_rot_shift(:,:,i)*xpos(i);
+%     weightedBrightnessY(:,:,i) = flatim_rot_shift(:,:,i)*h(i);
+% 
+% end
+% XSlopeError = sum(weightedBrightnessX,3)./(2*distanceToMirror*1000*sum(flatim_rot_shift,3));
+% YSlopeError = sum(weightedBrightnessY,3)./(2*distanceToMirror*1000*sum(flatim_rot_shift,3));
 
 %Method to calculate slope simply based on x,y location of maximum
 %brightness 
@@ -98,7 +98,7 @@ sy = 0:dy:MirrorDiameter+dy;
 
 %Gradient Vector Polynomial Reconstruction (not as reliable for circular
 %apertures
-[SAG,ChebyRms,coeffG]=ReconstructUsingG(XSlopeError,YSlopeError,sx,sy,40);
+%[SAG,ChebyRms,coeffG]=ReconstructUsingG(XSlopeError,YSlopeError,sx,sy,40);
 
 close all;
 figure

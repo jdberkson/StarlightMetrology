@@ -2,8 +2,9 @@ clear all
 clc
 
 %This code takes photos down two lines of a hexagonal grid, alternating
-%between 6 and 7 hexagons (or images).
+%between 7 and 8 hexagons (or images).
 
+%move off of limit switch
 COM = 'COM3';
 s = serial(COM, 'BaudRate', 9600);
 fopen(s);
@@ -22,57 +23,22 @@ counter = 1;
 timestamp = [];
 xpos = [];
 
-for j = 1:5
+for j = 1:4
 
-    %6 images
-    xposition = 19.486;
-    for i = 1:6
-        %move 39 mm
-        %COM = 'COM3';
-        readData = fscanf(s); %read in "Ready"
-        writedata = 'XF01949'; %command to stages
-        fwrite(s, writedata) %write data
-        pause(.5)
-        %take pic
-        src.Exposure = -1;
-        src.Gain = 10; 
-        src.Gamma = 1;
-        start(vid)
-        flatim(:,:,i) = getdata(vid, 1, 'uint8');
-        timestamp = [timestamp; clock];
-        xpos = [xpos; xposition];
-        %imagesc(flatim(:,:,i))
-        %colormap('gray')
-        %colorbar
-        stop(vid)
-        %save image
-        %filename = strcat('fig_',num2str(counter),'.png');
-        %saveas(gcf,filename)
-        xposition = xposition + 38.971;
-        counter = counter + 1;
-    end
-    
-    %COM = 'COM3';
-    readData = fscanf(s); %read in "Ready"
-    writedata = 'XB12666'; %command to stages to go up 6.5 hexagons
-    fwrite(s, writedata) %write data
-    pause(22)
-    
     %7 images
-    xposition = 0;
-    for i = 7:13
+    xposition = 19.486;
+    for i = 1:7
         %move 39 mm
-        %COM = 'COM3';
         readData = fscanf(s); %read in "Ready"
         writedata = 'XF01949'; %command to stages
         fwrite(s, writedata) %write data
         pause(.5)
         %take pic
         src.Exposure = -1;
-        src.Gain = 10; 
+        src.Gain = 30; 
         src.Gamma = 1;
         start(vid)
-        flatim(:,:,i) = getdata(vid, 1, 'uint8');
+        flatim(:,:,counter) = getdata(vid, 1, 'uint8');
         timestamp = [timestamp; clock];
         xpos = [xpos; xposition];
         %imagesc(flatim(:,:,i))
@@ -86,11 +52,44 @@ for j = 1:5
         counter = counter + 1;
     end
     
-    %COM = 'COM3';
     readData = fscanf(s); %read in "Ready"
-    writedata = 'XB12666'; %command to stages to go up 6.5 hexagons
+    %writedata = 'XB12666'; %command to stages to go up 6.5 hexagons
+    writedata = 'XB14615'; %command to stages to go up 7.5 hexagons
     fwrite(s, writedata) %write data
-    pause(22)
+    pause(9)
+    
+    %8 images
+    xposition = 0;
+    for i = 8:15
+        %move 39 mm
+        readData = fscanf(s); %read in "Ready"
+        writedata = 'XF01949'; %command to stages
+        fwrite(s, writedata) %write data
+        pause(.5)
+        %take pic
+        src.Exposure = -1;
+        src.Gain = 30; 
+        src.Gamma = 1;
+        start(vid)
+        flatim(:,:,counter) = getdata(vid, 1, 'uint8');
+        timestamp = [timestamp; clock];
+        xpos = [xpos; xposition];
+        %imagesc(flatim(:,:,i))
+        %colormap('gray')
+        %colorbar
+        stop(vid)
+        %save image
+        %filename = strcat('fig_',num2str(counter),'.png');
+        %saveas(gcf,filename)
+        xposition = xposition + 38.971;
+        counter = counter + 1;
+    end
+    
+    readData = fscanf(s); %read in "Ready"
+    %writedata = 'XB12666'; %command to stages to go up 6.5 hexagons
+    writedata = 'XB14615'; %command to stages to go up 7.5 hexagons
+    fwrite(s, writedata) %write data
+    pause(9)
    
 end
 
@@ -99,4 +98,4 @@ writedata = 'Home_X!'; %command to stages to go home
 fwrite(s, writedata) %write data
 fclose(s);
 delete(s);
-save('star_img.mat','flatim', 'timestamp', 'xpos');
+save('star_img.mat','flatim', 'timestamp', 'xpos', 'counter');

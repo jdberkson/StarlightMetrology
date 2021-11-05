@@ -117,7 +117,7 @@ if nargin>0
       DelayTime = 1/15; 
       DitherOption = 'dither'; 
       LoopCount = Inf; 
-      frame = gca; 
+      frame = gcf; 
    end
    
    tmp = strcmpi(varargin,'DelayTime'); 

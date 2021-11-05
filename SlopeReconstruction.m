@@ -106,26 +106,58 @@ imagesc(removePlane(Sag)); c = colorbar; ylabel(c,'meters');
 title('Sag error from ideal shape (tip/tilt removed)')
 
 
+for i = 1:size(flatim_rot_shift,3)
+    
+   TotalFlux(i) = sum(flatim_rot_shift(:,:,i),'all','omitnan');
+   
+end
+
+TotalFluxnorm = TotalFlux/max(TotalFlux);
+
+[TotalFluxnorm_sorted,idxsorted] = sort(TotalFluxnorm);
+
+radii = 22.5;
+figure
+for i = 1:size(flatim_rot_shift,3)
+    circles(xpos(idxsorted(i)),h(idxsorted(i)),radii,'edgecolor','None','facecolor',TotalFluxnorm_sorted(i)*ones(1,3),'facealpha',.8)
+
+    hold on
+    text(xpos(idxsorted(i)),h(idxsorted(i)),num2str(round(TotalFluxnorm_sorted(i),2)),'FontSize',16,'HorizontalAlignment','center')
+end
+axis equal
 
 
+close all
 
-% X = 1:size(XSlopeError,2);
-% Y = 1:size(XSlopeError,1);
-% [X,Y] = meshgrid(X,Y);
-% X(isnan(XSlopeError)) = [];
-% Y(isnan(XSlopeError)) = [];
-% temp = XSlopeError; temp(isnan(temp)) = [];
-% fitX = fit([X',Y'],temp','poly55');
-% X = 1:size(XSlopeError,2);
-% Y = 1:size(XSlopeError,1);
-% [X,Y] = meshgrid(X,Y);
-% Zfit_Xslope = fitX(X,Y);
-% Zfit_Xslope(isnan(XSlopeError)) = NaN;
-% figure
-% subplot(1,2,1)
-% imagesc(Zfit_Xslope);
-% colorbar;
-% subplot(1,2,2);
-% imagesc(XSlopeError);
-% colorbar;
 
+figure
+subplot(1,2,1); subplot(1,2,2);
+waitforbuttonpress
+gif('PSF_Helio.gif','DelayTime',.3,'LoopCount',5)
+
+
+for i = 1:size(flatim_rot_shift,3)
+    subplot(1,2,1)
+    imshow(flatim_rot_shift(:,:,i)/255); colormap gray; axis equal;
+    title([num2str(floor(time(i)/60)-floor(time(1)/60)) 'm ', num2str(mod(time(i),60)), 's'],'FontSize',24)
+    subplot(1,2,2)
+    
+    xlim([min(xpos)-25,max(xpos)+25]); ylim([min(h)-25,max(h)+25]);
+    
+    [TotalFluxnorm_sorted,idxsorted] = sort(TotalFluxnorm(1:i));
+    for j = 1:i
+        circles(xpos(idxsorted(j)),h(idxsorted(j)),radii,'edgecolor','None','facecolor',TotalFluxnorm(idxsorted(j))*ones(1,3),'facealpha',1)
+        viscircles([xpos(idxsorted(j)),h(idxsorted(j))],radii);
+        hold on
+        text(xpos(idxsorted(j)),h(idxsorted(j)),num2str(round(TotalFluxnorm(idxsorted(j)),2)),'FontSize',16,'Color',1-TotalFluxnorm(idxsorted(j))*ones(1,3),'HorizontalAlignment','center')
+    end
+   colorbar; colormap gray;
+    xlabel('Translation Stage Position(mm)');ylabel('Star Image Shift(mm)');
+    axis equal
+    hold off
+    
+    gif
+    drawnow;
+end
+
+    
